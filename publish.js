@@ -325,17 +325,17 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
   }, {})
 
   const subCategoryNames = Object.keys(subCategories)
-    
+
   var nav = ''
 
   subCategoryNames.forEach((subCategoryName) => {
     const subCategoryItems = subCategories[subCategoryName]
     if (subCategoryItems.length) {
       var itemsNav = ''
-    
+
       subCategoryItems.forEach(function(item) {
         var displayName
-    
+
         if ( !hasOwnProp.call(item, 'longname') ) {
           itemsNav += '<li>' + linktoFn('', item.name) + '</li>'
         }
@@ -361,11 +361,11 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
           }
 
           itemsNav += '</li>'
-    
+
           itemsSeen[item.longname] = true
         }
       })
-            
+
       if (itemsNav !== '') {
         var heading = itemHeading
         if (subCategoryName) {
@@ -405,7 +405,7 @@ function buildGroupNav (members, title) {
   nav += buildMemberNav(members.events || [], 'Events', seen, linkto)
   nav += buildMemberNav(members.mixins || [], 'Mixins', seen, linkto)
   nav += buildMemberNav(members.components || [], 'Components', seen, linkto)
-    
+
   if (members.globals && members.globals.length) {
     globalNav = ''
 
@@ -467,7 +467,7 @@ function buildNav(members, navTypes = null, betterDocs) {
       }
     })
   })
-    
+
   nav += buildGroupNav(rootScope)
   Object.keys(categorised).sort().forEach(function (category) {
     nav += buildGroupNav(categorised[category], category)
@@ -578,7 +578,7 @@ exports.publish = function(taffyData, opts, tutorials) {
 
   // update outdir if necessary, then create outdir
   packageInfo = ( find({kind: 'package'}) || [] )[0]
-  if (packageInfo && packageInfo.name) {
+  if (packageInfo && packageInfo.name && false) {
     outdir = path.join( outdir, packageInfo.name, (packageInfo.version || '') )
   }
   fs.mkPath(outdir)
@@ -680,7 +680,7 @@ exports.publish = function(taffyData, opts, tutorials) {
     try {
       const tutorialsFile = JSON.parse(fs.readFileSync(`${opts.tutorials}/tutorials.json`))
       members.tutorials = Object.keys(tutorialsFile).map(key => tutorials._tutorials[key])
-      view.smallHeader = false
+    //   view.smallHeader = false
     } catch (error) {
       // tutorials.json doesn't exist
       if (error.code !== 'ENOENT') {
@@ -688,7 +688,7 @@ exports.publish = function(taffyData, opts, tutorials) {
       }
       members.tutorials = tutorials.children
     }
-        
+
   } else {
     members.tutorials = tutorials.children
   }
@@ -710,10 +710,13 @@ exports.publish = function(taffyData, opts, tutorials) {
 
   // once for all
   view.nav = buildNav(members, null, conf.betterDocs)
-  
+
   view.tutorialsNav = buildNav(members, ['tutorials'], conf.betterDocs)
 
   bundler(members.components, outdir, conf)
+  if (!members.components.length) {
+    view.noComponents = true;
+  }
   attachModuleSymbols( find({ longname: {left: 'module:'} }), members.modules )
 
   // generate the pretty-printed source files first so other pages can link to them
@@ -727,7 +730,7 @@ exports.publish = function(taffyData, opts, tutorials) {
   files = find({kind: 'file'})
   packages = find({kind: 'package'})
 
-  generate('Home', '',
+  generate('', '',
     packages.concat(
       [{
         kind: 'mainpage',
@@ -813,7 +816,7 @@ exports.publish = function(taffyData, opts, tutorials) {
 
   function saveLandingPage() {
     const content = fs.readFileSync(conf.betterDocs.landing, 'utf8')
-        
+
     var landingPageData = {
       title: 'Home',
       content,
@@ -823,7 +826,7 @@ exports.publish = function(taffyData, opts, tutorials) {
     var docsPath = path.join(outdir, 'docs.html')
 
     fs.renameSync(homePath, docsPath)
-        
+
     view.layout = 'landing.tmpl'
     var html = view.render('content.tmpl', landingPageData)
 

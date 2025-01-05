@@ -41,10 +41,12 @@ var search = env.conf.templates && env.conf.templates.search
         </div>
         <div class="core" id="main-content-wrapper">
             <div class="content">
-                <header class="page-title">
-                    <p><?js= subtitle ?></p>
-                    <h1><?js= title ?></h1>
-                </header>
+                <?js if (title) { ?>
+                    <header class="page-title">
+                        <p><?js= subtitle ?></p>
+                        <h1><?js= title ?></h1>
+                    </header>
+                <?js } ?>
                 <?js= content ?>
             </div>
             <?js if (betterDocs.hideGenerator !== true) { ?>
