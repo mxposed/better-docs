@@ -43,7 +43,9 @@ gulp.task('watch', function () {
   if (process.env.DOCS) {
     const array = [
       ...process.env.DOCS.split(','),
-      ...process.env.DOCS.split(',').map(src => '!' + src.replace('**/*', 'node_modules/**/*'))
+      ...process.env.DOCS.split(',').map(src => {
+        return src.indexOf('**/*') === -1 ? src : '!' + src.replace('**/*', 'node_modules/**/*')
+      })
     ]
     console.log(array)
     gulp.watch(array, gulp.series(['docs']))
@@ -61,4 +63,3 @@ gulp.task('sync', () => {
 })
 
 gulp.task('default', gulp.series(['sass', 'js', 'docs', gulp.parallel(['watch', 'sync'])]))
-
